@@ -38,22 +38,20 @@ class AuthController extends Controller
     {
       $user->last_login = date('Y-m-d H:i:s');
       $user->save();
-
-      session([
-        'user' => [
-          'id' => $user->id,
-          'username' => $user->username
-        ]
-      ]);
-     
-      $userSession = session('user');
-      dd('Login com sucesso!', $userSession);
-      //return redirect('/dashboard');
     }
     else
     {
       return redirect()->back()->withInput()->with('loginError', 'Senha Inválida');
     }
+
+    session([
+      'user' => [
+        'id' => $user->id,
+        'username' => $user->username
+      ]
+    ]);
+
+    return redirect('/');
   }
 
   public function logout()
