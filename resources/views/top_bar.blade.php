@@ -1,4 +1,3 @@
-
 <div class="row mb-3 align-items-center">
     <div class="col">
         <a href="{{ route('home') }}">

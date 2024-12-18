@@ -7,56 +7,56 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-  public function login()
-  {
-    return view('login');
-  }
-
-  public function loginSubmit(Request $request)
-  {
-    $request->validate([
-      'text_username' => 'required|email',
-      'text_password' => 'required'
-    ]);
-
-    $username = $request->input('text_username');
-    $password = $request->input('text_password');
-
-    $user = User::where('username', $username)
-      ->where('deleted_at', NULL)
-      ->first();
-
-
-    // VERIFICA SE O USUÁRIO EXISTE
-    if (!$user)
+    public function login()
     {
-      return redirect()->back()->withInput()->with('loginError', 'Username ou password inválidos');
+        return view('login');
     }
 
-    // VERIFICA SE A SENHA É CORRETA
-    if (password_verify($password, $user->password))
+    public function loginSubmit(Request $request)
     {
-      $user->last_login = date('Y-m-d H:i:s');
-      $user->save();
+        $request->validate([
+            'text_username' => 'required|email',
+            'text_password' => 'required'
+        ]);
+
+        $username = $request->input('text_username');
+        $password = $request->input('text_password');
+
+        $user = User::where('username', $username)
+            ->where('deleted_at', NULL)
+            ->first();
+
+
+        // VERIFICA SE O USUÁRIO EXISTE
+        if (!$user)
+        {
+            return redirect()->back()->withInput()->with('loginError', 'Username ou password inválidos');
+        }
+
+        // VERIFICA SE A SENHA É CORRETA
+        if (password_verify($password, $user->password))
+        {
+            $user->last_login = date('Y-m-d H:i:s');
+            $user->save();
+        }
+        else
+        {
+            return redirect()->back()->withInput()->with('loginError', 'Senha Inválida');
+        }
+
+        session([
+            'user' => [
+                'id' => $user->id,
+                'username' => $user->username
+            ]
+        ]);
+
+        return redirect('/');
     }
-    else
+
+    public function logout()
     {
-      return redirect()->back()->withInput()->with('loginError', 'Senha Inválida');
+        session()->forget('user');
+        return redirect('/login');
     }
-
-    session([
-      'user' => [
-        'id' => $user->id,
-        'username' => $user->username
-      ]
-    ]);
-
-    return redirect('/');
-  }
-
-  public function logout()
-  {
-    session()->forget('user');
-    return redirect('/login');
-  }
 }
