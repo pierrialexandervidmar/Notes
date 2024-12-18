@@ -63,7 +63,7 @@ Acesse o PgAdmin pelo navegador em http://localhost:5050.
 
 Faça login usando as credenciais:
 
-- Email: admin@admin.com
+- Email: admin@example.com
 - Senha: admin
 
 
