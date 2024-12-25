@@ -7,49 +7,62 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * Classe Note
+ *
+ * Representa uma entidade de nota na aplicação.
+ * Inclui funcionalidades de soft delete, fábrica de objetos e notificações.
+ *
+ * @package App\Models
+ */
 class Note extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasFactory, Notifiable;
 
+    /**
+     * Obtém o usuário associado à nota.
+     *
+     * Define um relacionamento de muitos-para-um entre o modelo Note e o modelo User,
+     * indicando que cada nota pertence a um único usuário.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-   /** @use HasFactory<\Database\Factories\UserFactory> */
-   use HasFactory, Notifiable;
+    /**
+     * Os atributos que podem ser atribuídos em massa.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
 
-   /**
-    * The attributes that are mass assignable.
-    *
-    * @var list<string>
-    */
-   protected $fillable = [
-       'name',
-       'email',
-       'password',
-   ];
+    /**
+     * Os atributos que devem ser ocultados na serialização.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-   /**
-    * The attributes that should be hidden for serialization.
-    *
-    * @var list<string>
-    */
-   protected $hidden = [
-       'password',
-       'remember_token',
-   ];
-
-   /**
-    * Get the attributes that should be cast.
-    *
-    * @return array<string, string>
-    */
-   protected function casts(): array
-   {
-       return [
-           'email_verified_at' => 'datetime',
-           'password' => 'hashed',
-       ];
-   }
+    /**
+     * Obtém os atributos que devem ser convertidos para tipos específicos.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 }
