@@ -30,7 +30,19 @@ class MainController extends Controller
 
     public function submitNote(Request $request)
     {
-        echo 'Submetida nova nota';
+        $request->validate([
+            'text_title' =>'required|max:200',
+            'text_note' =>'required|max:3000'
+        ]);
+
+        $title = $request->input('text_title');
+        $text = $request->input('text_note');
+
+        $user = User::find(session('user.id'));
+        $user->notes()->create(['title' => $title, 'text' => $text]);
+        
+
+        return redirect()->route('home');
     }
 
     public function editNode($id)

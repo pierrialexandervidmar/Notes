@@ -7,5 +7,6 @@
     <link rel="stylesheet" href="assets/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <link rel="shortcut icon" href="assets/images/favicon.png" type="image/png">
+
 </head>
 <body>

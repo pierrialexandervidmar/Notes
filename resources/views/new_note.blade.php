@@ -15,29 +15,36 @@
                     <p class="display-6 mb-0">Nova Nota</p>
                 </div>
                 <div class="col text-end">
-                    <a href="#" class="btn btn-outline-danger">
+                    <a href="{{ route('home') }}" class="btn btn-outline-danger">
                         <i class="fa-solid fa-xmark"></i>
                     </a>            
                 </div>
             </div>
 
             <!-- form -->
-            <form action="#" method="post">
+            <form action="{{ route('submitNote') }}" method="post">
+                @csrf
                 <div class="row mt-3">
                     <div class="col">
                         <div class="mb-3">
                             <label class="form-label">Título</label>
-                            <input type="text" class="form-control bg-primary text-white" name="text_title">
+                            <input type="text" class="form-control bg-primary text-white @error('text_title') is-invalid @enderror" name="text_title" value="{{ old('text_title') }}">
+                            @error('text_title')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Texto</label>
-                            <textarea class="form-control bg-primary text-white" name="text_note" rows="5"></textarea>
+                            <textarea class="form-control bg-primary text-white @error('text_note') is-invalid @enderror" name="text_note" rows="5">{{ old('text_note') }}</textarea>
+                            @error('text_note')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col text-end">
-                        <a href="#" class="btn btn-primary px-5"><i class="fa-solid fa-ban me-2"></i>Cancelar</a>
+                        <a href="{{ route('home') }}" class="btn btn-primary px-5"><i class="fa-solid fa-ban me-2"></i>Cancelar</a>
                         <button type="submit" class="btn btn-secondary px-5"><i class="fa-regular fa-circle-check me-2"></i>Salvar</button>
                     </div>
                 </div>
