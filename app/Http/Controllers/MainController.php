@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Note;
 use App\Models\User;
 use App\Services\Operations;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -13,11 +14,16 @@ class MainController extends Controller
     public function index()
     {
         $id = session('user.id');
-        $user = User::find($id)->toArray();
-        $notes = User::find($id)->notes()->orderBy('created_at', 'desc')->get()->toArray();
+        $user = User::find($id);
+
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Sessão inválida. Faça login novamente.');
+        }
+
+        $notes = $user->notes()->orderBy('created_at', 'desc')->get()->toArray();
 
         // show home view
-        return view('home', ['notes' => $notes, 'user' => $user]);
+        return view('home', ['notes' => $notes]);
     }
 
     public function newNote()
@@ -39,8 +45,7 @@ class MainController extends Controller
         $text = $request->input('text_note');
 
         $user = User::find(session('user.id'));
-        $user->notes()->create(['title' => $title, 'text' => $text]);
-        
+        $user->notes()->create(['title' => $title, 'text' => $text]);        
 
         return redirect()->route('home');
     }
@@ -48,14 +53,21 @@ class MainController extends Controller
     public function editNode($id)
     {
         $id = Operations::decryptId($id);
-        $note = User::find(session('user.id'))->notes()->find($id)->toArray();
+        $note = Note::find($id);
 
-        echo 'Formulário para edição da nota '. $note['title'];
+        return view('edit_note', ['note' => $note]);
+    }
+
+    public function editNoteSubmit($id)
+    {
+        $id = Operations::decryptId($id);
+        $note = Note::find($id);
+
+        return view('edit_note', ['note' => $note]);
     }
 
     public function deleteNode($id)
     {
- 
         $id = Operations::decryptId($id);
         $note = User::find(session('user.id'))->notes()->find($id)->toArray();
 
