@@ -87,11 +87,37 @@ class MainController extends Controller
         return redirect()->route('home');
     }
 
-    public function deleteNode($id)
+    public function deleteNoteConfirm($id)
     {
         $id = Operations::decryptId($id);
-        $note = User::find(session('user.id'))->notes()->find($id)->toArray();
+        $note = Note::find($id);
 
-        echo 'Confirmação para excluir a nota ' . $note['title'];
+        return view('delete_note', ['note' => $note]);
+    }
+
+    public function deleteNote($id)
+    {
+        $id = Operations::decryptId($id);
+        $note = Note::find($id);
+
+        if (!$note)
+        {
+            return redirect()->route('home')->with('error', 'Nota não encontrada.');
+        }
+
+        // hard delete
+        //$note->delete();
+
+        // soft delete
+        //$note->deleted_at = date('Y:m:d H:i:s');
+        //$note->save();
+
+        // soft delete por model, agora com a propriedade setada lá.
+        $note->delete();
+
+        // se quiser forçar a exclusão mesmo tendo o soft delete setado no model
+        //$note->forceDelete();
+
+        return redirect()->route('home');
     }
 }
