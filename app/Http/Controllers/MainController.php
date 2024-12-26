@@ -16,7 +16,8 @@ class MainController extends Controller
         $id = session('user.id');
         $user = User::find($id);
 
-        if (!$user) {
+        if (!$user)
+        {
             return redirect()->route('login')->with('error', 'Sessão inválida. Faça login novamente.');
         }
 
@@ -37,20 +38,20 @@ class MainController extends Controller
     public function submitNote(Request $request)
     {
         $request->validate([
-            'text_title' =>'required|max:200',
-            'text_note' =>'required|max:3000'
+            'text_title' => 'required|max:200',
+            'text_note' => 'required|max:3000'
         ]);
 
         $title = $request->input('text_title');
         $text = $request->input('text_note');
 
         $user = User::find(session('user.id'));
-        $user->notes()->create(['title' => $title, 'text' => $text]);        
+        $user->notes()->create(['title' => $title, 'text' => $text]);
 
         return redirect()->route('home');
     }
 
-    public function editNode($id)
+    public function editNote($id)
     {
         $id = Operations::decryptId($id);
         $note = Note::find($id);
@@ -58,12 +59,32 @@ class MainController extends Controller
         return view('edit_note', ['note' => $note]);
     }
 
-    public function editNoteSubmit($id)
+    public function editNoteSubmit(Request $request)
     {
-        $id = Operations::decryptId($id);
+
+        $request->validate([
+            'text_title' => 'required|max:200',
+            'text_note' => 'required|max:3000'
+        ]);
+
+        if ($request->note_id == null)
+        {
+            return redirect()->route('home');
+        }
+
+        $id = Operations::decryptId($request->note_id);
         $note = Note::find($id);
 
-        return view('edit_note', ['note' => $note]);
+        if (!$note)
+        {
+            return redirect()->route('home')->with('error', 'Nota não encontrada.');
+        }
+
+        $note->title = $request->input('text_title');
+        $note->text = $request->input('text_note');
+        $note->save();
+
+        return redirect()->route('home');
     }
 
     public function deleteNode($id)
@@ -71,6 +92,6 @@ class MainController extends Controller
         $id = Operations::decryptId($id);
         $note = User::find(session('user.id'))->notes()->find($id)->toArray();
 
-        echo 'Confirmação para excluir a nota '. $note['title'];
+        echo 'Confirmação para excluir a nota ' . $note['title'];
     }
 }
